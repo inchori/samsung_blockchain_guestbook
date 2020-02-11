@@ -1,5 +1,7 @@
 package com.android.samsung.codelab.guestbookdapp.remote;
 
+import android.util.Log;
+
 import com.android.samsung.codelab.guestbookdapp.ethereum.FunctionUtil;
 import com.android.samsung.codelab.guestbookdapp.model.Feed;
 import com.android.samsung.codelab.guestbookdapp.util.AppExecutors;
@@ -9,12 +11,17 @@ import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.Uint;
+import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthCall;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 public class FeedLoader {
     private String address;
@@ -69,8 +76,17 @@ public class FeedLoader {
         // Make Eth Call Transaction
         // send ETH Call
 
-        /*
-        Function functionGetPost = FunctionUtil.createGetPostSmartContractCall(index);
+
+        Function functionGetPost = new Function("getPost"
+                , singletonList(new Uint(BigInteger.valueOf(index)))
+                , Arrays.asList(
+                new TypeReference<Utf8String>() {
+                }, new TypeReference<Utf8String>() {
+                }, new TypeReference<Utf8String>() {
+                }, new TypeReference<Utf8String>() {
+                }
+        ));
+
         String data = FunctionEncoder.encode(functionGetPost);
         Transaction tx = Transaction.createEthCallTransaction(address, FunctionUtil.CONTRACT_ADDRESS, data);
 
@@ -78,11 +94,16 @@ public class FeedLoader {
         if (result.hasError()) {
             throw new Exception("Get Post eth call error" + result.getError().getMessage());
         }
-         */
 
         String value = result.getValue();
+        Log.d("ExampleCode", "Return Value : " + value);
         List<TypeReference<Type>> outputParameters = functionGetPost.getOutputParameters();
         List<Type> types = FunctionReturnDecoder.decode(value, outputParameters);
+        Log.d("ExampleCode", "type length : " + types.size());
+        Log.d("ExampleCode", "value 1(name) : " + types.get(0).getValue());
+        Log.d("ExampleCode", "value 2(comment): " + types.get(1).getValue());
+        Log.d("ExampleCode", "value 3(emoji): " + types.get(2).getValue());
+        Log.d("ExampleCode", "value 4(date): " + types.get(3).getValue());
         return new Feed(
                 (String) types.get(3).getValue()
                 , (String) types.get(0).getValue()

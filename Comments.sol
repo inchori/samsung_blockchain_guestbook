@@ -1,8 +1,8 @@
 pragma solidity ^0.5.10;
 
 contract Comments {
-    struct Post {
-        string name;
+    struct Post { //pet
+        string name; //tribe, gender, age
         string comment;
         string date;
         string emoji;
